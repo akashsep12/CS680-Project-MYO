@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/tabhost" android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<LinearLayout android:orientation="vertical"
+		android:layout_width="match_parent" android:layout_height="match_parent">
+		<TabWidget android:id="@android:id/tabs"
+			android:layout_width="match_parent" android:layout_height="wrap_content" 
+			/>
+
+		<FrameLayout android:id="@android:id/tabcontent"
+			android:layout_width="match_parent" android:layout_height="match_parent">
+
+			<!-- first tab -->
+			<LinearLayout android:id="@+id/tab1"
+				android:orientation="vertical" android:layout_width="match_parent"
+				android:layout_height="match_parent">
+				<CheckBox android:id="@+id/check01" android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:text="Had lunch yet?" />
+				<CheckBox android:id="@+id/check02" android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:text="Class over yet?" />
+			</LinearLayout>
+
+			<!--  second tab -->
+			<LinearLayout android:id="@+id/tab2"
+				android:orientation="vertical" android:layout_width="match_parent"
+				android:layout_height="match_parent">
+				<LinearLayout android:orientation="horizontal"
+					android:layout_width="match_parent" android:layout_height="wrap_content">
+
+					<EditText android:id="@+id/EditText01"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:layout_weight="1.0" android:lines="1" 
+						/>
+					<Button android:id="@+id/Button01" android:layout_width="wrap_content"
+						android:layout_height="wrap_content" android:text="Go" />
+				</LinearLayout>
+				<WebView android:id="@+id/web" android:layout_width="match_parent"
+					android:layout_height="match_parent" />
+			</LinearLayout>
+
+			<!--  third tab -->
+			<LinearLayout android:id="@+id/tab3"
+				android:orientation="vertical" android:layout_width="match_parent"
+				android:layout_height="match_parent" android:background="#fffff670">
+
+				<TextView android:id="@+id/TextView01"
+					android:layout_width="match_parent" android:layout_height="wrap_content"
+					android:text="Choose One" android:textColor="#ff0000ff"
+					android:gravity="center" android:textSize="14pt" />
+
+
+				<RadioGroup android:id="@+id/radio" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" >
+					<RadioButton android:id="@+id/rb01"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:text="Option 1" android:textColor="#ff000000" android:checked="true"/>
+					<RadioButton android:id="@+id/rb02"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:text="Option 2" android:textColor="#ff000000" />
+					<RadioButton android:id="@+id/rb03"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:text="Option 3" android:textColor="#ff000000" />
+				</RadioGroup>
+				<Button android:id="@+id/Button02" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="Clear" android:textColor="#ffff0000" />
+
+			</LinearLayout>
+
+
+		</FrameLayout>
+	</LinearLayout>
+</TabHost>
