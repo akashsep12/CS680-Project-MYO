@@ -2,6 +2,7 @@ package com.example.myocontroller;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
 
 import com.thalmic.myo.AbstractDeviceListener;
@@ -13,7 +14,13 @@ import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.XDirection;
 
 public class BackgroundService extends Service {
-
+	
+	@Override
+	public void onCreate() {
+        super.onCreate();
+        
+	}
+	
     // Classes that inherit from AbstractDeviceListener can be used to receive events from Myo devices.
     // If you do not override an event, the default behavior is to do nothing.
     private DeviceListener mListener = new AbstractDeviceListener() {
