@@ -2,8 +2,6 @@ package com.example.myocontroller;
 
 import java.util.ArrayList;
 
-import android.media.session.MediaController;
-
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
 import com.thalmic.myo.DeviceListener;

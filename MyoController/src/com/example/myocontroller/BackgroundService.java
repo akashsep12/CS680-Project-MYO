@@ -1,26 +1,75 @@
 package com.example.myocontroller;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
+import android.widget.Toast;
+import android.media.MediaPlayer;
+import android.media.Rating;
+import android.media.session.MediaController;
+import android.media.session.MediaSession;
+import android.media.session.MediaSessionManager;
 
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
 import com.thalmic.myo.DeviceListener;
 import com.thalmic.myo.Myo;
+import com.thalmic.myo.Hub;
+import com.thalmic.myo.Myo.VibrationType;
 import com.thalmic.myo.Pose;
 import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.XDirection;
 
 public class BackgroundService extends Service {
 	
+	public static final String ACTION_PLAY = "action_play";
+	public static final String ACTION_PAUSE = "action_pause";
+	public static final String ACTION_REWIND = "action_rewind";
+	public static final String ACTION_FAST_FORWARD = "action_fast_foward";
+	public static final String ACTION_NEXT = "action_next";
+	public static final String ACTION_PREVIOUS = "action_previous";
+	public static final String ACTION_STOP = "action_stop";
+
+	private MediaPlayer mMediaPlayer;
+	private MediaSessionManager mManager;
+	private MediaSession mSession;
+	private MediaController mController;
+	
+	
 	@Override
 	public void onCreate() {
         super.onCreate();
         
+        // First, we initialize the Hub singleton with an application identifier.
+        Hub hub = Hub.getInstance();
+        if (!hub.init(this, getPackageName())) {
+            // We can't do anything with the Myo device if the Hub can't be initialized, so exit.
+            Toast.makeText(this, "Couldn't initialize Hub", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Next, register for DeviceListener callbacks.
+        hub.addListener(mListener);
+        
+        hub.attachToAdjacentMyo();
+        initMediaSessions();
 	}
 	
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if( mManager == null ) {
+            initMediaSessions();
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+	
+    
     // Classes that inherit from AbstractDeviceListener can be used to receive events from Myo devices.
     // If you do not override an event, the default behavior is to do nothing.
     private DeviceListener mListener = new AbstractDeviceListener() {
@@ -29,7 +78,7 @@ public class BackgroundService extends Service {
         @Override
         public void onConnect(Myo myo, long timestamp) {
             // Set the text color of the text view to cyan when a Myo connects.
-            
+            myo.notifyUserAction();
         }
 
         // onDisconnect() is called whenever a Myo has been disconnected.
@@ -58,7 +107,7 @@ public class BackgroundService extends Service {
         // policy, that means poses will now be delivered to the listener.
         @Override
         public void onUnlock(Myo myo, long timestamp) {
-            
+        	
         }
 
         // onLock() is called whenever a synced Myo has been locked. Under the standard locking
@@ -99,6 +148,7 @@ public class BackgroundService extends Service {
                 case REST:
                 case DOUBLE_TAP:
                     int restTextId = R.string.hello_world;
+                    Log.i("Myo", "Double Tap");
                     switch (myo.getArm()) {
                         case LEFT:
                             restTextId = R.string.arm_left;
@@ -110,16 +160,23 @@ public class BackgroundService extends Service {
                     
                     break;
                 case FIST:
-                    
+                	Log.i("Myo", "Fist");
                     break;
                 case WAVE_IN:
-                    
+                    mController.getTransportControls().skipToPrevious();
+                    Log.i("Myo", "Wave In");
                     break;
                 case WAVE_OUT:
-                    
+                    mController.getTransportControls().skipToNext();
+                    Log.i("Myo", "Wave Out");
                     break;
                 case FINGERS_SPREAD:
-                    
+                	if (mMediaPlayer.isPlaying()) {
+                		mController.getTransportControls().pause();
+                	} else {
+                		mController.getTransportControls().play();
+                	}
+                	Log.i("Myo", "Spread");
                     break;
             }
 
@@ -139,10 +196,114 @@ public class BackgroundService extends Service {
         }
     };
 
+    private void initMediaSessions() {
+        mMediaPlayer = new MediaPlayer();
+
+        mSession = new MediaSession(getApplicationContext(), "simple player session");
+        mController =new MediaController(getApplicationContext(), mSession.getSessionToken());
+
+        mSession.setCallback(new MediaSession.Callback(){
+            @Override
+            public void onPlay() {
+                super.onPlay();
+                Log.e( "MediaPlayerService", "onPlay");
+            }
+
+            @Override
+            public void onPause() {
+                super.onPause();
+                Log.e( "MediaPlayerService", "onPause");
+            }
+
+            @Override
+            public void onSkipToNext() {
+                super.onSkipToNext();
+                Log.e( "MediaPlayerService", "onSkipToNext");
+                //Change media here
+            }
+
+            @Override
+            public void onSkipToPrevious() {
+                super.onSkipToPrevious();
+                Log.e( "MediaPlayerService", "onSkipToPrevious");
+                //Change media here
+            }
+
+            @Override
+            public void onFastForward() {
+                super.onFastForward();
+                Log.e( "MediaPlayerService", "onFastForward");
+                //Manipulate current media here
+            }
+
+            @Override
+            public void onRewind() {
+                super.onRewind();
+                Log.e( "MediaPlayerService", "onRewind");
+                //Manipulate current media here
+            }
+
+            @Override
+            public void onStop() {
+                super.onStop();
+                Log.e( "MediaPlayerService", "onStop");
+                //Stop media player here
+            }
+
+            @Override
+            public void onSeekTo(long pos) {
+                super.onSeekTo(pos);
+            }
+
+            @Override
+            public void onSetRating(Rating rating) {
+                super.onSetRating(rating);
+            }
+        }
+    );
+}
+    
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
+    @Override
+    public boolean onUnbind(Intent intent) {
+        mSession.release();
+        return super.onUnbind(intent);
+    }
+	
+    private Notification.Action generateAction( int icon, String title, String intentAction ) {
+        Intent intent = new Intent( getApplicationContext(), BackgroundService.class );
+        intent.setAction( intentAction );
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        return new Notification.Action.Builder( icon, title, pendingIntent ).build();
+    }
+    
+    private void buildNotification( Notification.Action action ) {
+        Notification.MediaStyle style = new Notification.MediaStyle();
+
+        Intent intent = new Intent( getApplicationContext(), BackgroundService.class );
+        intent.setAction( ACTION_STOP );
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        Notification.Builder builder = new Notification.Builder( this )
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle( "Media Title" )
+                .setContentText( "Media Artist" )
+                .setDeleteIntent( pendingIntent )
+                .setStyle(style);
+
+        builder.addAction( generateAction( android.R.drawable.ic_media_previous, "Previous", ACTION_PREVIOUS ) );
+        builder.addAction( generateAction( android.R.drawable.ic_media_rew, "Rewind", ACTION_REWIND ) );
+        builder.addAction( action );
+        builder.addAction( generateAction( android.R.drawable.ic_media_ff, "Fast Foward", ACTION_FAST_FORWARD ) );
+        builder.addAction( generateAction( android.R.drawable.ic_media_next, "Next", ACTION_NEXT ) );
+        style.setShowActionsInCompactView(0,1,2,3,4);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService( Context.NOTIFICATION_SERVICE );
+        notificationManager.notify( 1, builder.build() );
+}
+    
 }
