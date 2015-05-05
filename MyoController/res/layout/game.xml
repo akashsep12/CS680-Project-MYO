@@ -1,0 +1,56 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backapp"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".Game" >
+
+    <com.example.myocontroller.GameBoard
+        android:id="@+id/gameboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonup"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/backrepeat" />
+
+    <Button
+        android:id="@+id/buttonleft"
+        android:layout_width="64dp"
+        android:layout_height="48dp"
+        android:layout_above="@+id/buttondown"
+        android:layout_toLeftOf="@+id/buttondown"
+        android:background="@drawable/backbutton"
+        android:text="@string/L" />
+
+    <Button
+        android:id="@+id/buttonright"
+        android:layout_width="64dp"
+        android:layout_height="48dp"
+        android:layout_below="@+id/buttonup"
+        android:layout_toRightOf="@+id/buttonup"
+        android:background="@drawable/backbutton"
+        android:text="@string/R" />
+
+    <Button
+        android:id="@+id/buttondown"
+        android:layout_width="64dp"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="24dp"
+        android:layout_toLeftOf="@+id/buttonright"
+        android:background="@drawable/backbutton"
+        android:text="@string/D" />
+
+    <Button
+        android:id="@+id/buttonup"
+        android:layout_width="64dp"
+        android:layout_height="48dp"
+        android:layout_above="@+id/buttonleft"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/backbutton"
+        android:text="@string/U" />
+
+</RelativeLayout>
